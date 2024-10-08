@@ -36,27 +36,22 @@
 
   
   <script type="module">
-    import { buildField, calcCoordUsingRoot } from './galoisField.js';
+    import { GaloisField } from './galoisField.js';
 
     // Массив field с элементами объекта
-    var galoisField = [];
-
-    // Массив объектов корней
-    var roots = [];
+    var galoisField;
 
     function calcField() {
         // Получаем значения из полей
-        const p = parseInt(document.getElementById('p').value);
-        const n = parseInt(document.getElementById('n').value);        
+        const p = BigInt(parseInt(document.getElementById('p').value));
+        const n = BigInt(parseInt(document.getElementById('n').value));        
 
-        let field = buildField(p, n);
-        galoisField = field.galoisField;
-        roots = field.roots;
+        galoisField = new GaloisField(p, n);
 
         // Заполняем список выбора корней
         const rootSelect = document.getElementById('root');
         rootSelect.innerHTML = '';
-        roots.forEach((root, index) => {
+        galoisField.roots.forEach((root, index) => {
             const option = document.createElement('option');
             option.value = index;
             option.text = `a: ${root.alpha}, b: ${root.beta}`;
@@ -67,7 +62,7 @@
     // Функция для построения таблицы
     function buildTable() {
       
-      const selectedRoot = roots[parseInt(document.getElementById('root').value)];
+      const selectedRoot = galoisField.roots[parseInt(document.getElementById('root').value)];
       const p = parseInt(document.getElementById('p').value);
 
       // Очищаем предыдущую таблицу, если она существует
@@ -75,7 +70,7 @@
       table.innerHTML = '';
 
       // Считаем координаты для всех чисел поле Галуа
-      calcCoordUsingRoot(galoisField, selectedRoot, p)  
+      let field = galoisField.buildField(selectedRoot); 
 
       const foot = document.createElement('tfoot');
       const rowFoot = document.createElement('tr');
@@ -94,7 +89,7 @@
 
         for (let j = 0n; j < p; j++) {
           const cell = document.createElement('td');
-          const element = galoisField.find(el => el.x == j && el.y == i);
+          const element = galoisField.field.find(el => el.x == j && el.y == i);
           
           if (element) {
             cell.textContent = element.number;
