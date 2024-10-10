@@ -18,23 +18,23 @@
   
   <!-- Поля ввода для p, n и выбора корня -->
   <label for="p">Enter p:</label>
-  <input type="number" id="p" min="1" value="3"><br><br>
+  <input type="number" id="p" min="1" value="23"><br><br>
 
   <label for="n">Enter n:</label>
   <input type="number" id="n" min="1" value="2"><br><br>
 
+  <button id="calcField">Find roots</button>
   <label for="root">Select root:</label>
   <select id="root"></select><br><br>
 
   <!-- Кнопки -->
-  <button id="calcField">Calc (U, V) and Roots</button>
+  
   <button id="buildTable">Build Table</button>
   <button id="clearTable">Clear Table</button>
 
   <!-- Таблица для отображения поля Галуа -->
   <table id="galoisTable"></table>
 
-  
   <script type="module">
     import { GaloisField } from './galoisField.js';
 
@@ -47,6 +47,7 @@
         const n = BigInt(parseInt(document.getElementById('n').value));        
 
         galoisField = new GaloisField(p, n);
+        galoisField.clearRoots();
 
         // Заполняем список выбора корней
         const rootSelect = document.getElementById('root');
@@ -70,7 +71,7 @@
       table.innerHTML = '';
 
       // Считаем координаты для всех чисел поле Галуа
-      let field = galoisField.buildField(selectedRoot); 
+      let field = galoisField.buildFieldUsingMatrix(selectedRoot); 
 
       const foot = document.createElement('tfoot');
       const rowFoot = document.createElement('tr');
@@ -79,7 +80,7 @@
       rowFoot.appendChild(dummyFoot);
 
       // Строим строки таблицы
-      for (let i = p-1; i >= 0n; i--) {
+      for (let i = p-1; i >= 0; i--) {
         const row = document.createElement('tr');
         const rowHead = document.createElement('th');
         
@@ -87,12 +88,14 @@
         rowHead.textContent = i;
         row.appendChild(rowHead);
 
-        for (let j = 0n; j < p; j++) {
+        for (let j = 0; j < p; j++) {
           const cell = document.createElement('td');
           const element = galoisField.field.find(el => el.x == j && el.y == i);
           
           if (element) {
             cell.textContent = element.number;
+            cell.setAttribute('style', `background-color: oklab(${100}% ${1/(i/element.number)} ${1/(j/element.number)})`)
+            // cell.setAttribute('style', `background-color: rgb( 0 ${(element.number*i)} ${(element.number*j)})`)
           } else {
             cell.textContent = '∞';
           }

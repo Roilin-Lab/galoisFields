@@ -1,3 +1,36 @@
+// import { matrix } from "./matrix";
+
+const matrix = {
+    mul: function(A, B) {
+        let rowsA = A.length, colsA = A[0].length;
+        let rowsB = B.length, colsB = B[0].length;
+        let C = [];
+        if (colsA != rowsB) return false;
+        for (let i = 0; i < rowsA; i++) C[i] = [];
+        for (let k = 0; k < colsB; k++) { 
+            for (let i = 0; i < rowsA; i++) {
+                    let t = 0n;
+                    for (let j = 0; j < rowsB; j++) t += A[i][j]*B[j][k];
+                    C[i][k] = t;
+                }
+            }
+        return C;
+    },
+    pow: function(A, n) {
+        if (n == 1) return A;
+        else return this.mul( A, this.pow(A, n-1) );
+    },
+    add: function(A, B) {
+        let m = A.length, n = A[0].length;
+        let C = [];
+        for (let i = 0; i < m; i++) {
+            C[i] = [];
+            for (let j = 0; j < n; j++) C[i][j] = A[i][j]+B[i][j];
+        }
+        return C;
+    },
+};
+
 const buildTriangleMod = function(p, n) {
     let triangle = [];
     let numRows = p**n-1n;
@@ -55,6 +88,54 @@ export class GaloisField {
         });
 
         return this.field;
+    }
+    buildFieldUsingMatrix(root) {
+        this.field = [];
+        let A = [
+            [0n, root.beta],
+            [1n, root.alpha]
+        ];
+        let B = [
+            [0n, root.beta],
+            [1n, root.alpha]
+        ];
+        for (let i = 1; i < (this.p**this.n); i++) {
+            let elem = { number: i };
+            elem.x = B[0][0] % this.p;
+            elem.y = B[1][0] % this.p;     
+            B = matrix.mul(B, A);
+            this.field.push(elem);
+        }
+        return this.field;
+    }
+    clearRoots() {
+        let clearRoots = this.roots.filter(root => {
+            let field = [];
+            let A = [
+                [0n, root.beta],
+                [1n, root.alpha]
+            ];
+            let B = [
+                [0n, root.beta],
+                [1n, root.alpha]
+            ];
+            for (let i = 1; i < (this.p**this.n); i++) {
+                let elem = { number: i };
+                let x = B[0][0] % this.p;
+                let y = B[1][0] % this.p;
+                if (!field.find(el => el.x == x && el.y == y)) {
+                    B = matrix.mul(B, A);
+                    elem.x = x;
+                    elem.y = y;
+                    field.push(elem);
+                }
+                else {
+                    return false;
+                }
+            }
+            return true;
+        });
+        this.roots = clearRoots;
     }
     findRoots() {
         let A = { U: [], V: []};
