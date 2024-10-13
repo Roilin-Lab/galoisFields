@@ -71,7 +71,7 @@
       table.innerHTML = '';
 
       // Считаем координаты для всех чисел поле Галуа
-      let field = galoisField.buildFieldUsingMatrix(selectedRoot); 
+      let field = galoisField.buildFieldUsingMatrix(selectedRoot);
 
       const foot = document.createElement('tfoot');
       const rowFoot = document.createElement('tr');
@@ -94,7 +94,7 @@
           
           if (element) {
             cell.textContent = element.number;
-            cell.setAttribute('style', `background-color: oklab(${100}% ${1/(i/element.number)} ${1/(j/element.number)})`)
+            // cell.setAttribute('style', `background-color: oklab(${100}% ${1/(i/element.number)} ${1/(j/element.number)})`)
             // cell.setAttribute('style', `background-color: rgb( 0 ${(element.number*i)} ${(element.number*j)})`)
           } else {
             cell.textContent = '∞';

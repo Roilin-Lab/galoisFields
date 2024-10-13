@@ -29,9 +29,25 @@ const matrix = {
     }
 };
 
-let A = [
-    [0n, 1n],
-    [1n, 1n],
+let p = 3n
+let B = [
+    [0n, 1n, 0n],
+    [0n, 0n, 1n],
+    [3n, 0n, 4n],
 ];
+let A = [
+    [0n, 1n, 0n, 0n],
+    [0n, 0n, 1n, 0n],
+    [0n, 0n, 0n, 1n],
+    [1n, 0n, 0n, 2n],
+];
+A = matrix.pow(A, 6);
+for (let i=0; i < A.length; i++) {
+    for (let j=0; j < A[i].length; j++) {
+        A[i][j] = A[i][j] % p;
+    }
+}
          
-console.log(matrix.pow(A, 1010));
+A.forEach(a => {
+    console.log(a);
+});
