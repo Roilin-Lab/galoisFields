@@ -57,8 +57,8 @@ export class GaloisField {
         this.n = n;
         this.field = [];
         this.roots = [];
-        this.pascalTriangle = buildTriangleMod(p, n);
-        this.findRoots();
+        // this.pascalTriangle = buildTriangleMod(p, n);
+        // this.findRoots();
     }
     buildField(root) {
         this.field = [];
@@ -136,6 +136,19 @@ export class GaloisField {
             return true;
         });
         this.roots = clearRoots;
+    }
+    buildFromMatrix(A) {
+        this.field = [];
+        for (let i = 1; i < (this.p**this.n) - 0n; i++) {
+            let B = matrix.pow(A, i);
+            let elem = { number: i };
+            elem.coords = [];
+            for (let k=B[0].length-1; k >= 0; k--) {
+                elem.coords.push(B[0][k] % this.p);
+            }    
+            this.field.push(elem);
+        }
+        return this.field;
     }
     findRoots() {
         let A = { U: [], V: []};
