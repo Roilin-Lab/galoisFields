@@ -1,7 +1,7 @@
 // import { matrix } from "./matrix";
 
 const matrix = {
-    mul: function(A, B) {
+    mul: function(A, B, p) {
         let rowsA = A.length, colsA = A[0].length;
         let rowsB = B.length, colsB = B[0].length;
         let C = [];
@@ -10,7 +10,7 @@ const matrix = {
         for (let k = 0; k < colsB; k++) { 
             for (let i = 0; i < rowsA; i++) {
                     let t = 0n;
-                    for (let j = 0; j < rowsB; j++) t += A[i][j]*B[j][k];
+                    for (let j = 0; j < rowsB; j++) t += (A[i][j]*B[j][k]) % p;
                     C[i][k] = t;
                 }
             }
@@ -31,7 +31,7 @@ const matrix = {
     },
 };
 
-const buildTriangleMod = function(p, n) {
+export const buildTriangleMod = function(p, n) {
     let triangle = [];
     let numRows = p**n-1n;
     if (numRows == 0) return [];
@@ -103,7 +103,7 @@ export class GaloisField {
             let elem = { number: i };
             elem.x = B[0][0] % this.p;
             elem.y = B[1][0] % this.p;     
-            B = matrix.mul(B, A);
+            B = matrix.mul(B, A, this.p);
             this.field.push(elem);
         }
         return this.field;
@@ -139,13 +139,14 @@ export class GaloisField {
     }
     buildFromMatrix(A) {
         this.field = [];
+        let B = A;
         for (let i = 1; i < (this.p**this.n) - 0n; i++) {
-            let B = matrix.pow(A, i);
             let elem = { number: i };
             elem.coords = [];
             for (let k=B[0].length-1; k >= 0; k--) {
                 elem.coords.push(B[0][k] % this.p);
             }    
+            B = matrix.mul(B, A, this.p);
             this.field.push(elem);
         }
         return this.field;

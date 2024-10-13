@@ -36,7 +36,7 @@
   <table id="galoisTable"></table>
 
   <script type="module">
-    import { GaloisField } from './galoisField.js';
+    import { GaloisField, buildTriangleMod } from './galoisField.js';
 
     // Массив field с элементами объекта
     var galoisField;
@@ -47,6 +47,8 @@
         const n = BigInt(parseInt(document.getElementById('n').value));        
 
         galoisField = new GaloisField(p, n);
+        galoisField.pascalTriangle = buildTriangleMod(p, n);
+        galoisField.findRoots();
         galoisField.clearRoots();
 
         // Заполняем список выбора корней
