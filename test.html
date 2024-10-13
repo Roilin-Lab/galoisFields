@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Координатные Плоскости</title>
+    <title>Galois Field Table p^n</title>
     <style>
         table {
             border-collapse: collapse;
@@ -30,7 +30,7 @@
 </head>
 <body>
 
-<h1>Координатные Плоскости</h1>
+<h1>Galois Field Table Builder</h1>
 <div id="coordinate-planes"></div>
 
 <script type="module">
@@ -105,12 +105,14 @@ function createMultipleTables(n, data) {
 }
 
 // Пример использования
-const p = 3n;
-const n = 3n;
+const p = 5n;
+const n = 5n;
 const A = [
-    [0n, 1n, 0n,],
-    [0n, 0n, 1n,],
-    [2n, 0n, 1n,],
+    [0n, 1n, 0n, 0n, 0n,],
+    [0n, 0n, 1n, 0n, 0n,],
+    [0n, 0n, 0n, 1n, 0n,],
+    [0n, 0n, 0n, 0n, 1n,],
+    [2n, 1n, 1n, 0n, 1n,],
 ];
 const B = [
     [0n, 1n],
