@@ -105,19 +105,15 @@ function createMultipleTables(n, data) {
 }
 
 // Пример использования
-const p = 5n;
-const n = 5n;
+const p = 4n;
+const n = 4n;
 const A = [
-    [0n, 1n, 0n, 0n, 0n,],
-    [0n, 0n, 1n, 0n, 0n,],
-    [0n, 0n, 0n, 1n, 0n,],
-    [0n, 0n, 0n, 0n, 1n,],
-    [2n, 1n, 1n, 0n, 1n,],
+    [ 0n, 1n, 0n, 0n ],
+    [ 0n, 0n, 1n, 0n ],
+    [ 0n, 0n, 0n, 1n ],
+    [ 3n, 3n, 2n, 2n ]
 ];
-const B = [
-    [0n, 1n],
-    [2n, 2n],
-];
+
 let field = new GaloisField(p, n)
 const data = field.buildFromMatrix(A);
 
