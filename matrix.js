@@ -48,6 +48,13 @@ const matrix = {
         if (n == 1) return A;
         else return this.mul( A, this.pow(A, n-1, p), p);
     },
+    powFor: function(A, n, p) {
+        let B = A;
+        for (let i=1; i < n; i++) {
+            B = matrix.mul(B, A, p);
+        }
+        return B;
+    },
     E: function(n) {
         let result = [];
         for (let i = 0; i < n; i++) {
@@ -61,26 +68,24 @@ const matrix = {
 
 let p = 3n
 let A = [
-    [0n, 1n, 0n],
-    [0n, 0n, 1n],
-    [1n, 0n, 2n],
+    [0n, 1n],
+    [1n, 2n],
 ];
-let B = [
+let F = [
     [0n, 1n, 0n, 0n],
     [0n, 0n, 1n, 0n],
     [0n, 0n, 0n, 1n],
-    [1n, 0n, 0n, 1n],
+    [1n, 0n, 1n, 0n],
 ];
-A = matrix.pow(A, 26, p);
-// for (let i=0; i < A.length; i++) {
-//     for (let j=0; j < A[i].length; j++) {
-//         A[i][j] = A[i][j] % p;
-//     }
-// }
-         
-// A.forEach(a => {
-//     console.log(a);
-// });
+
+// let B = A;
+// for (let i=1; i < 9; i++) {
+//     console.log(`${i}---------------------${equal(B, matrix.E(2))}`);
+//     B.forEach(a => {
+//         console.log(a);
+//     });
+//     B = matrix.mul(B, A, p);
+// }     
 
 function generateRoots(p, n) {
     let result = [];
@@ -127,4 +132,5 @@ function calcLinOp(p, n) {
 }
 
 // Пример использования
-console.log(calcLinOp(3n, 2n));
+// console.log(calcLinOp(3n, 2n));
+// console.log(matrix.powFor(A, 2, p));

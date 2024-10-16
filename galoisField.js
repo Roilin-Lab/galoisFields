@@ -1,4 +1,23 @@
-// import { matrix } from "./matrix";
+/**
+ * Tests two data structures for equality
+ * @param {object} x
+ * @param {object} y
+ * @returns {boolean}
+ */
+var equal = function(x, y) {
+    if (typeof x !== typeof y) return false;
+    if (x instanceof Array && y instanceof Array && x.length !== y.length) return false;
+    if (typeof x === 'object') {
+        for (var p in x) if (x.hasOwnProperty(p)) {
+            if (typeof x[p] === 'function' && typeof y[p] === 'function') continue;
+            if (x[p] instanceof Array && y[p] instanceof Array && x[p].length !== y[p].length) return false;
+            if (typeof x[p] !== typeof y[p]) return false;
+            if (typeof x[p] === 'object' && typeof y[p] === 'object') { if (!equal(x[p], y[p])) return false; } else
+            if (x[p] !== y[p]) return false;
+        }
+    } else return x === y;
+    return true;
+};
 
 const matrix = {
     mul: function(A, B, p) {
@@ -11,7 +30,7 @@ const matrix = {
             for (let i = 0; i < rowsA; i++) {
                     let t = 0n;
                     for (let j = 0; j < rowsB; j++) t += (A[i][j]*B[j][k]) % p;
-                    C[i][k] = t;
+                    C[i][k] = t % p;
                 }
             }
         return C;
@@ -19,6 +38,13 @@ const matrix = {
     pow: function(A, n) {
         if (n == 1) return A;
         else return this.mul( A, this.pow(A, n-1) );
+    },
+    powFor: function(A, n, p) {
+        let B = A;
+        for (let i=1; i < n; i++) {
+            B = this.mul(B, A, p);
+        }
+        return B;
     },
     add: function(A, B) {
         let m = A.length, n = A[0].length;
@@ -29,6 +55,15 @@ const matrix = {
         }
         return C;
     },
+    E: function(n) {
+        let result = [];
+        for (let i = 0; i < n; i++) {
+            let linOp = Array(Number(n)).fill(0n);
+            linOp[i] = 1n;
+            result.push([...linOp]);
+        }
+        return result;
+    }
 };
 
 export const buildTriangleMod = function(p, n) {
@@ -57,8 +92,7 @@ export class GaloisField {
         this.n = n;
         this.field = [];
         this.roots = [];
-        // this.pascalTriangle = buildTriangleMod(p, n);
-        // this.findRoots();
+        this.linOps = [];
     }
     buildField(root) {
         this.field = [];
@@ -151,32 +185,32 @@ export class GaloisField {
         }
         return this.field;
     }
-    findRoots() {
-        let A = { U: [], V: []};
-        for (let term of this.getTerm(this.p**this.n-1n, true)) {
-            A.U.push(term);
-        }
-        for (let term of this.getTerm(this.p**this.n-2n)) {
-            A.V.push(term);
-        }
-        for (let i = 0n; i < this.p; i++) {
-            for (let j = 0n; j < this.p; j++) {
-                let u = A.U.map((term) => {
-                    return ((i ** term.degAlpha) * (j ** term.degBeta) * term.coef) % this.p;
-                }).reduce((acc, cur) => acc + cur, 0n);
-                let v = A.V.map((term) => {
-                    return ((i ** term.degAlpha) * (j ** term.degBeta) * term.coef) % this.p;
-                }).reduce((acc, cur) => acc + cur, 0n);
+    // findRoots() {
+    //     let A = { U: [], V: []};
+    //     for (let term of this.getTerm(this.p**this.n-1n, true)) {
+    //         A.U.push(term);
+    //     }
+    //     for (let term of this.getTerm(this.p**this.n-2n)) {
+    //         A.V.push(term);
+    //     }
+    //     for (let i = 0n; i < this.p; i++) {
+    //         for (let j = 0n; j < this.p; j++) {
+    //             let u = A.U.map((term) => {
+    //                 return ((i ** term.degAlpha) * (j ** term.degBeta) * term.coef) % this.p;
+    //             }).reduce((acc, cur) => acc + cur, 0n);
+    //             let v = A.V.map((term) => {
+    //                 return ((i ** term.degAlpha) * (j ** term.degBeta) * term.coef) % this.p;
+    //             }).reduce((acc, cur) => acc + cur, 0n);
 
-                if (u % this.p == 0n && v % this.p == 1n) {
-                    this.roots.push({
-                        alpha: i,
-                        beta: j,
-                    });
-                }
-            }
-        }
-    }
+    //             if (u % this.p == 0n && v % this.p == 1n) {
+    //                 this.roots.push({
+    //                     alpha: i,
+    //                     beta: j,
+    //                 });
+    //             }
+    //         }
+    //     }
+    // }
     getTerm = function* (k, u) { 
         for (let i = k - 1n; i >= 0n; i -= 2n) {
             let degAlpha = i;
@@ -194,5 +228,53 @@ export class GaloisField {
             if (coef == 0n) continue;
             yield {degAlpha, degBeta, coef};
         }
+    }
+    findRoots() {
+        this.linOps = this.calcLinOp(this.p, this.n);
+        this.roots = [];
+        this.linOps.forEach(linOp => {
+            this.roots.push([...linOp.at(-1)]);
+        })
+    }
+    generateRoots(p, n) {
+        let result = [];
+        let root = Array(Number(n)).fill(0n);
+        
+        for (let i = 0; i < p**n; i++) {
+            result.push([...root]);
+            for (let j = n - 1n; j >= 0n; j--) {
+                root[j]++;                      
+                if (root[j] < p) break;         
+                root[j] = 0n;                    
+            }
+        }
+        return result;
+    }
+    generateLinOp(n){
+        let result = [];
+        for (let i = 0; i < n - 1n; i++) {
+            let linOp = Array(Number(n)).fill(0n);
+            linOp[i+1] = 1n;
+            result.push([...linOp]);
+        }
+        return result;
+    }
+    calcLinOp(p, n) {
+        let roots = this.generateRoots(p, n)
+        let linOp = roots.map(root => {
+            let lp = this.generateLinOp(n);
+            lp.push(root);
+            return lp;
+        });
+    
+        let result = []
+        for (let i = 0; i < linOp.length; i++) {
+            let x = matrix.powFor(linOp[i], Number(p**n) - 1, p);
+            let y = matrix.E(n);
+            if (equal(x, y)) {
+                result.push(linOp[i]);
+            }
+        }
+        return result;
     }
 }

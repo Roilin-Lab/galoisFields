@@ -30,11 +30,30 @@
 </head>
 <body>
 
-<h1>Galois Field Table Builder</h1>
-<div id="coordinate-planes"></div>
+    <h2>Galois Field Table Builder</h2>
+
+    <!-- Поля ввода для p, n и выбора корня -->
+    <label for="p">Enter p:</label>
+    <input type="number" id="p" min="1" value="3"><br><br>
+
+    <label for="n">Enter n:</label>
+    <input type="number" id="n" min="1" value="2"><br><br>
+
+    <button id="calcRoots">Find roots</button>
+    <label for="root">Select root:</label>
+    <select id="root"></select><br><br>
+
+    <!-- Кнопки -->
+
+    <button id="buildTable">Build Table</button>
+    <button id="clearTable">Clear Table</button>
+    <div id="coordinate-planes"></div>
 
 <script type="module">
 import { GaloisField } from './galoisField.js';
+
+var galoisField;
+
 function createMultipleTables(n, data) {
     const dimensions = data.length > 0 ? data[0].coords.length : 2; // Количество измерений
     const container = document.getElementById('coordinate-planes');
@@ -104,20 +123,54 @@ function createMultipleTables(n, data) {
     createTableForCoords([], 0);
 }
 
+function calcRoots() {
+    const p = BigInt(parseInt(document.getElementById('p').value));
+    const n = BigInt(parseInt(document.getElementById('n').value));
+
+    galoisField = new GaloisField(p, n);
+    galoisField.findRoots();
+
+    // Заполняем список выбора корней
+    const rootSelect = document.getElementById('root');
+        rootSelect.innerHTML = '';
+        galoisField.roots.forEach((root, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.text = `${root.toString()}`;
+            rootSelect.appendChild(option);
+    });
+}
+
+function buildTable() {
+    clearTable();
+    const selectedRoot = galoisField.linOps[parseInt(document.getElementById('root').value)];
+
+    galoisField.buildFromMatrix(selectedRoot);
+    createMultipleTables(galoisField.p, galoisField.field);
+}
+
+function clearTable() {
+    const table = document.getElementById('coordinate-planes');
+    table.innerHTML = '';
+}
+
 // Пример использования
-const p = 4n;
+const p = 3n;
 const n = 4n;
 const A = [
     [ 0n, 1n, 0n, 0n ],
     [ 0n, 0n, 1n, 0n ],
     [ 0n, 0n, 0n, 1n ],
-    [ 3n, 3n, 2n, 2n ]
+    [ 1n, 0n, 0n, 2n ],
 ];
 
-let field = new GaloisField(p, n)
-const data = field.buildFromMatrix(A);
+// const data = field.buildFromMatrix(A);
 
-createMultipleTables(p, data);
+// createMultipleTables(p, data);
+
+document.getElementById('calcRoots').addEventListener('click', calcRoots);
+document.getElementById('buildTable').addEventListener('click', buildTable);
+document.getElementById('clearTable').addEventListener('click', clearTable);
 </script>
 
 </body>
