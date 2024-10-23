@@ -123,7 +123,8 @@ export class GaloisField {
 
         return this.field;
     }
-    buildFieldUsingMatrix(root) {
+    // deprecated
+    buildFieldUsingMatrix(root) { 
         this.field = [];
         let A = [
             [0n, root.beta],
@@ -185,32 +186,6 @@ export class GaloisField {
         }
         return this.field;
     }
-    // findRoots() {
-    //     let A = { U: [], V: []};
-    //     for (let term of this.getTerm(this.p**this.n-1n, true)) {
-    //         A.U.push(term);
-    //     }
-    //     for (let term of this.getTerm(this.p**this.n-2n)) {
-    //         A.V.push(term);
-    //     }
-    //     for (let i = 0n; i < this.p; i++) {
-    //         for (let j = 0n; j < this.p; j++) {
-    //             let u = A.U.map((term) => {
-    //                 return ((i ** term.degAlpha) * (j ** term.degBeta) * term.coef) % this.p;
-    //             }).reduce((acc, cur) => acc + cur, 0n);
-    //             let v = A.V.map((term) => {
-    //                 return ((i ** term.degAlpha) * (j ** term.degBeta) * term.coef) % this.p;
-    //             }).reduce((acc, cur) => acc + cur, 0n);
-
-    //             if (u % this.p == 0n && v % this.p == 1n) {
-    //                 this.roots.push({
-    //                     alpha: i,
-    //                     beta: j,
-    //                 });
-    //             }
-    //         }
-    //     }
-    // }
     getTerm = function* (k, u) { 
         for (let i = k - 1n; i >= 0n; i -= 2n) {
             let degAlpha = i;
@@ -260,6 +235,7 @@ export class GaloisField {
         return result;
     }
     calcLinOp(p, n) {
+        let E = matrix.E(Number(n));
         let roots = this.generateRoots(p, n)
         let linOp = roots.map(root => {
             let lp = this.generateLinOp(n);
@@ -269,11 +245,22 @@ export class GaloisField {
     
         let result = []
         for (let i = 0; i < linOp.length; i++) {
-            let x = matrix.powFor(linOp[i], Number(p**n) - 1, p);
-            let y = matrix.E(n);
-            if (equal(x, y)) {
-                result.push(linOp[i]);
-            }
+            console.log(i);
+            let isCorrect = true;
+            let lastNumber = Number(p**n) - 1;
+            if (equal(E, matrix.powFor(linOp[i], lastNumber, p))) {
+                for (let j = 1; j < lastNumber; j++) {
+                    let x = matrix.powFor(linOp[i], j, p);
+                    if (equal(x, E)) {
+                        isCorrect = false;
+                        break;
+                    }   
+                }
+                if (isCorrect) {
+                    result.push([...linOp[i]]);
+                    break;
+                }
+            }   
         }
         return result;
     }

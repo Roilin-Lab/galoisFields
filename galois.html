@@ -99,7 +99,7 @@ function createMultipleTables(n, data) {
                         // Ищем объект с координатами x, y и фиксированными оставшимися координатами
                         const obj = data.find(item => {
                             const [x, y, ...rest] = item.coords;
-                            return x == i - 1n && y == j - 1n && rest.every((coord, index) => coord == remainingCoords[index]);
+                            return x == j - 1n && y == i - 1n && rest.every((coord, index) => coord == remainingCoords[index]);
                         });
                         cell.innerHTML = obj ? obj.number : '∞';
                     }
@@ -155,14 +155,14 @@ function clearTable() {
 }
 
 // Пример использования
-const p = 3n;
-const n = 4n;
-const A = [
-    [ 0n, 1n, 0n, 0n ],
-    [ 0n, 0n, 1n, 0n ],
-    [ 0n, 0n, 0n, 1n ],
-    [ 1n, 0n, 0n, 2n ],
-];
+// const p = 3n;
+// const n = 4n;
+// const A = [
+//     [ 0n, 1n, 0n, 0n ],
+//     [ 0n, 0n, 1n, 0n ],
+//     [ 0n, 0n, 0n, 1n ],
+//     [ 1n, 0n, 0n, 2n ],
+// ];
 
 // const data = field.buildFromMatrix(A);
 
