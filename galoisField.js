@@ -234,6 +234,16 @@ export class GaloisField {
         }
         return result;
     }
+    generateLinOpFromRoot(n, root){
+        let result = [];
+        for (let i = 0; i < n - 1n; i++) {
+            let linOp = Array(Number(n)).fill(0n);
+            linOp[i+1] = 1n;
+            result.push([...linOp]);
+        }
+        result.push(root);
+        return result;
+    }
     calcLinOp(p, n) {
         let E = matrix.E(Number(n));
         let roots = this.generateRoots(p, n)
