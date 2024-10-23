@@ -100,6 +100,7 @@ function createMultipleTables(n, data) {
                         const obj = data.find(item => {
                             const [x, y, ...rest] = item.coords;
                             return x == j - 1n && y == i - 1n && rest.every((coord, index) => coord == remainingCoords[index]);
+                            return x == j - 1n && y == i - 1n && rest.every((coord, index) => coord == remainingCoords[index]);
                         });
                         cell.innerHTML = obj ? obj.number : '∞';
                     }
@@ -143,6 +144,7 @@ function calcRoots() {
 
 function buildTable() {
     clearTable();
+
     const selectedRoot = galoisField.linOps[parseInt(document.getElementById('root').value)];
 
     galoisField.buildFromMatrix(selectedRoot);
@@ -153,20 +155,6 @@ function clearTable() {
     const table = document.getElementById('coordinate-planes');
     table.innerHTML = '';
 }
-
-// Пример использования
-// const p = 3n;
-// const n = 4n;
-// const A = [
-//     [ 0n, 1n, 0n, 0n ],
-//     [ 0n, 0n, 1n, 0n ],
-//     [ 0n, 0n, 0n, 1n ],
-//     [ 1n, 0n, 0n, 2n ],
-// ];
-
-// const data = field.buildFromMatrix(A);
-
-// createMultipleTables(p, data);
 
 document.getElementById('calcRoots').addEventListener('click', calcRoots);
 document.getElementById('buildTable').addEventListener('click', buildTable);
