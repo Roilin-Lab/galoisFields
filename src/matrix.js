@@ -69,7 +69,7 @@ const matrix = {
 let p = 3n
 let A = [
     [0n, 1n],
-    [1n, 2n],
+    [1n, 1n],
 ];
 let F = [
     [0n, 1n, 0n, 0n],
@@ -78,14 +78,14 @@ let F = [
     [1n, 0n, 1n, 0n],
 ];
 
-// let B = A;
-// for (let i=1; i < 9; i++) {
-//     console.log(`${i}---------------------${equal(B, matrix.E(2))}`);
-//     B.forEach(a => {
-//         console.log(a);
-//     });
-//     B = matrix.mul(B, A, p);
-// }     
+let B = A;
+for (let i=1; i < 9; i++) {
+    console.log(`${i}---------------------${equal(B, matrix.E(2))}`);
+    B.forEach(a => {
+        console.log(a);
+    });
+    B = matrix.mul(B, A, p);
+}     
 
 function generateRoots(p, n) {
     let result = [];
@@ -130,7 +130,3 @@ function calcLinOp(p, n) {
     }
     return result;
 }
-
-// Пример использования
-// console.log(calcLinOp(3n, 2n));
-// console.log(matrix.powFor(A, 2, p));

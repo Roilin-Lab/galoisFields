@@ -268,7 +268,7 @@ export class GaloisField {
                 }
                 if (isCorrect) {
                     result.push([...linOp[i]]);
-                    break;
+                    // break;
                 }
             }   
         }
